@@ -74,7 +74,7 @@ class Player:
                 self.image = self.horse_left
             if key[pygame.K_RIGHT]:
                 dx += 7
-                self.image = self.horse
+                self.image = self.player
             if key[pygame.K_SPACE] and not self.jumped:
                 self.vel_y = -15
                 self.jumped = True
@@ -120,7 +120,7 @@ class Player:
 
     def reset(self, x, y, image):
         self.player = image
-        self.player = pygame.transform.scale(self.player, (90, 61))
+        self.player = pygame.transform.scale(self.player, (90, 49))
         self.image = self.player
         self.horse_left = pygame.transform.flip(self.player, True, False)
         self.ghost = pygame.transform.scale(pygame.image.load("platformer stuff/ghost2.png"), (88, 112))
@@ -246,8 +246,8 @@ class Flag(pygame.sprite.Sprite):
         self.rect.y = y
 
 
-def reset_level(level_index):
-    player.reset(70, screen_height - 200)
+def reset_level(level_index, image):
+    player.reset(70, screen_height - 200, image)
     bear_group.empty()
     lava_group.empty()
     flag_group.empty()
@@ -262,9 +262,9 @@ restart_img = pygame.transform.scale(pygame.image.load("platformer stuff/restart
 exit_img = pygame.transform.scale(pygame.image.load("platformer stuff/exit.png"), (200, 100))
 play_img = pygame.transform.scale(pygame.image.load("platformer stuff/play.png"), (200, 100))
 shop_img = pygame.transform.scale(pygame.image.load("platformer stuff/shop.png"), (200, 100))
-dragon_b = pygame.transform.scale(pygame.image.load("platformer stuff/dragonblue.png"), (200, 100))
-dragon_r = pygame.transform.scale(pygame.image.load("platformer stuff/dragonred.png"), (200, 100))
-dragon_p = pygame.transform.scale(pygame.image.load("platformer stuff/dragonpurple.png"), (200, 100))
+dragon_b = pygame.image.load("platformer stuff/dragon blue.png")
+dragon_r = pygame.image.load("platformer stuff/dragon red.png")
+dragon_p = pygame.image.load("platformer stuff/dragon purple.png")
 coin10 = pygame.transform.scale(pygame.image.load("platformer stuff/10.png"), (200, 100))
 coin15 = pygame.transform.scale(pygame.image.load("platformer stuff/15.png"), (200, 100))
 coin20 = pygame.transform.scale(pygame.image.load("platformer stuff/20.png"), (200, 100))
@@ -313,9 +313,9 @@ restart = Button(screen_width // 2 + 100, screen_height // 2, restart_img)
 exit_button = Button(screen_width // 2 - 300, screen_height // 2 + 2, exit_img)
 play = Button(screen_width // 2 + 100, screen_height // 2, play_img)
 shop = Button(screen_width // 2 - 150, screen_height // 2, shop_img)
-dragon_purple = Button(screen_width // 2 + 100, screen_height // 2, coin10)
-dragon_blue = Button(screen_width // 2 - 150, screen_height // 2, coin10)
-dragon_red = Button(screen_width // 2 - 350, screen_height // 2, coin10)
+dragon_purple = Button(screen_width // 2 + 100, screen_height // 2 + 50, coin20)
+dragon_blue = Button(screen_width // 2 - 150, screen_height // 2 + 50, coin10)
+dragon_red = Button(screen_width // 2 - 350, screen_height // 2 + 50, coin10)
 
 
 bear_group = pygame.sprite.Group()
@@ -342,15 +342,27 @@ while run:
             menu = False
             shop_screen = True
     elif shop_screen:
+        draw_text("X " + str(coins), font_score, white, tile_size - 10, 10)
         if dragon_red.draw():
             if coins >= 10:
                 coins -= 10
+                player_img = dragon_r
+                player.reset(70, screen_height - 200, player_img)
+
         if dragon_blue.draw():
             if coins >= 10:
                 coins -= 10
+                player_img = dragon_b
+                player.reset(70, screen_height - 200, player_img)
+
         if dragon_purple.draw():
-            if coins >= 10:
-                coins -= 10
+            if coins >= 20:
+                coins -= 20
+                player_img = dragon_p
+                player.reset(70, screen_height - 200, player_img)
+
+        if exit_button.draw():
+            shop_screen = False
     else:
         world.draw()
         if game_over == 0:
@@ -362,7 +374,7 @@ while run:
         if game_over == -1:
             if restart.draw():
                 world = []
-                world = reset_level(level_index)
+                world = reset_level(level_index, player_img)
                 game_over = 0
                 coins_add = 0
             if exit_button.draw():
@@ -372,13 +384,13 @@ while run:
             level_index += 1
             if level_index <= max_level - 1:
                 world = []
-                world = reset_level(level_index)
+                world = reset_level(level_index, player_img)
                 game_over = 0
                 coins += coins_add
             else:
                 if restart.draw():
                     level_index = 0
-                    world = reset_level(level_index)
+                    world = reset_level(level_index, player_img)
                     game_over = 0
                     coins += coins_add
         bear_group.draw(screen)
@@ -395,5 +407,3 @@ while run:
     pygame.display.update()
 
 pygame.quit()
-
-qwerty
