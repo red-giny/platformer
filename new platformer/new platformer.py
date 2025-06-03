@@ -12,7 +12,7 @@ menu = True
 level_index = 0
 max_level = 2
 shop_screen = False
-coins = 50
+coins = 100
 coins_add = 0
 
 white = (255, 255, 255)
@@ -276,6 +276,7 @@ coin10 = pygame.transform.scale(pygame.image.load("platformer stuff/10.png"), (2
 coin15 = pygame.transform.scale(pygame.image.load("platformer stuff/15.png"), (200, 100))
 coin20 = pygame.transform.scale(pygame.image.load("platformer stuff/20.png"), (200, 100))
 player_img = pygame.image.load("platformer stuff/dragon small.png")
+img = pygame.image.load("platformer stuff/dragon small.png")
 
 
 world_data = [
@@ -333,6 +334,7 @@ bear_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
 flag_group = pygame.sprite.Group()
 coin_group = pygame.sprite.Group()
+counting_coin = Coin(tile_size // 2, tile_size // 2)
 
 player = Player(70, screen_height - 200, player_img)
 world = World(world_data[level_index])
@@ -408,14 +410,18 @@ while run:
             draw_text("X " + str(coins), font_score, white, tile_size - 10, 10)
 
         if game_over == -1:
+            coins_add = 0
+            player_img = img
             if restart.draw():
                 world = []
                 world = reset_level(level_index, player_img)
                 game_over = 0
-                coins_add = 0
             if exit_button.draw():
                 run = False
                 coins = 0
+            if shop.draw():
+                menu = False
+                shop_screen = True
         if game_over == 1:
             level_index += 1
             if level_index <= max_level - 1:
@@ -423,12 +429,18 @@ while run:
                 world = reset_level(level_index, player_img)
                 game_over = 0
                 coins += coins_add
+            if shop.draw():
+                menu = False
+                shop_screen = True
             else:
                 if restart.draw():
                     level_index = 0
                     world = reset_level(level_index, player_img)
                     game_over = 0
                     coins += coins_add
+                if shop.draw():
+                    menu = False
+                    shop_screen = True
         bear_group.draw(screen)
         lava_group.draw(screen)
         flag_group.draw(screen)
