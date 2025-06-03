@@ -120,7 +120,10 @@ class Player:
 
     def reset(self, x, y, image):
         self.player = image
-        self.player = pygame.transform.scale(self.player, (90, 49))
+        if image == dragon_p:
+            self.player = pygame.transform.scale(self.player, (90, 49))
+        else:
+            self.player = pygame.transform.scale(self.player, (90, 61))
         self.image = self.player
         self.horse_left = pygame.transform.flip(self.player, True, False)
         self.ghost = pygame.transform.scale(pygame.image.load("platformer stuff/ghost2.png"), (88, 112))
@@ -262,12 +265,13 @@ restart_img = pygame.transform.scale(pygame.image.load("platformer stuff/restart
 exit_img = pygame.transform.scale(pygame.image.load("platformer stuff/exit.png"), (200, 100))
 play_img = pygame.transform.scale(pygame.image.load("platformer stuff/play.png"), (200, 100))
 shop_img = pygame.transform.scale(pygame.image.load("platformer stuff/shop.png"), (200, 100))
-dragon_b = pygame.image.load("platformer stuff/dragon blue.png")
+dragon_bl = pygame.image.load("platformer stuff/dragon blue.png")
 dragon_r = pygame.image.load("platformer stuff/dragon red.png")
 dragon_p = pygame.image.load("platformer stuff/dragon purple.png")
 dragon_w = pygame.image.load("platformer stuff/dragon white.png")
 dragon_rain = pygame.image.load("platformer stuff/dragon rainbow.png")
 dragon_g = pygame.image.load("platformer stuff/dragon green.png")
+dragon_br = pygame.image.load("platformer stuff/dragon brown.png")
 coin10 = pygame.transform.scale(pygame.image.load("platformer stuff/10.png"), (200, 100))
 coin15 = pygame.transform.scale(pygame.image.load("platformer stuff/15.png"), (200, 100))
 coin20 = pygame.transform.scale(pygame.image.load("platformer stuff/20.png"), (200, 100))
@@ -313,12 +317,16 @@ world_data = [
     ]]
 
 restart = Button(screen_width // 2 + 100, screen_height // 2, restart_img)
-exit_button = Button(screen_width // 2 - 300, screen_height // 2 + 2, exit_img)
+exit_button = Button(screen_width // 2 - 300, screen_height // 2 + 60, exit_img)
 play = Button(screen_width // 2 + 100, screen_height // 2, play_img)
 shop = Button(screen_width // 2 - 150, screen_height // 2, shop_img)
 dragon_purple = Button(screen_width // 2 + 100, screen_height // 2 + 50, coin20)
-dragon_blue = Button(screen_width // 2 - 150, screen_height // 2 + 50, coin10)
-dragon_red = Button(screen_width // 2 - 350, screen_height // 2 + 50, coin10)
+dragon_blue = Button(screen_width // 2 - 150, screen_height // 2, coin10)
+dragon_red = Button(screen_width // 2 - 350, screen_height // 2, coin10)
+dragon_brown = Button(screen_width // 2 + 100, screen_height // 2 + 200, coin10)
+dragon_green = Button(screen_width // 2 - 150, screen_height // 2 + 400, coin10)
+dragon_white = Button(screen_width // 2, screen_height // 2 - 400, coin10)
+dragon_rainbow = Button(screen_width // 2 - 350, screen_height // 2 - 200, coin10)
 
 
 bear_group = pygame.sprite.Group()
@@ -346,6 +354,7 @@ while run:
             shop_screen = True
     elif shop_screen:
         draw_text("X " + str(coins), font_score, white, tile_size - 10, 10)
+
         if dragon_red.draw():
             if coins >= 10:
                 coins -= 10
@@ -355,13 +364,37 @@ while run:
         if dragon_blue.draw():
             if coins >= 10:
                 coins -= 10
-                player_img = dragon_b
+                player_img = dragon_bl
                 player.reset(70, screen_height - 200, player_img)
 
         if dragon_purple.draw():
             if coins >= 20:
                 coins -= 20
                 player_img = dragon_p
+                player.reset(70, screen_height - 200, player_img)
+
+        if dragon_brown.draw():
+            if coins >= 10:
+                coins -= 10
+                player_img = dragon_br
+                player.reset(70, screen_height - 200, player_img)
+
+        if dragon_white.draw():
+            if coins >= 10:
+                coins -= 10
+                player_img = dragon_w
+                player.reset(70, screen_height - 200, player_img)
+
+        if dragon_rainbow.draw():
+            if coins >= 10:
+                coins -= 10
+                player_img = dragon_rain
+                player.reset(70, screen_height - 200, player_img)
+
+        if dragon_green.draw():
+            if coins >= 10:
+                coins -= 10
+                player_img = dragon_g
                 player.reset(70, screen_height - 200, player_img)
 
         if exit_button.draw():
