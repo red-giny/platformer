@@ -458,7 +458,7 @@ world_data = [
         [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 9, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1],
         [1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
-        [1, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 1],
         [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
@@ -587,43 +587,50 @@ while run:
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_r
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_blue.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_bl
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_purple.draw():
             if coins >= 20:
                 coins -= 20
                 player_img = dragon_p
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_brown.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_br
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_white.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_w
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_rainbow.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_rain
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if dragon_green.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_g
-                player.reset(70, screen_height - 200, player_img)
+                game_over = 0
+                player.reset(70, 600, player_img)
 
         if exit_button2.draw():
             shop_screen = False
@@ -646,13 +653,12 @@ while run:
                 run = False
                 coins = 0
             if shop.draw():
-                game_over = 0
                 menu = False
                 shop_screen = True
 
         if next_level:
             if shop.draw():
-                next_level = False
+                menu = False
                 shop_screen = True
 
             if exit_button.draw():
@@ -663,7 +669,7 @@ while run:
                 next_level = False
 
         if game_over == 1:
-            next_level = True
+            menu = True
             level_index += 1
             if level_index <= max_level - 1:
                 world = []
