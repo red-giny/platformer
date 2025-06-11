@@ -3,16 +3,17 @@ from pygame.locals import *
 
 pygame.init()
 
-font = pygame.font.SysFont('Bauhaus 93', 70)
-font_score = pygame.font.SysFont('Bauhaus 93', 30)
+font = pygame.font.SysFont('Lobster', 70)
+font_score = pygame.font.SysFont('Lobster', 30)
 
 tile_size = 50
 game_over = 0
 menu = True
-level_index = 0
-max_level = 2
 shop_screen = False
-coins = 100
+next_level = False
+coins = 0
+level_index = 0
+max_level = 11
 coins_add = 0
 
 white = (255, 255, 255)
@@ -89,6 +90,7 @@ class Player:
 
             # collision
             for tile in world.tile_list:
+                tile_img, tile_rect, tile_type = tile
                 if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
                     dx = 0
 
@@ -99,6 +101,64 @@ class Player:
                     elif self.vel_y >= 0:
                         dy = tile[1].top - self.rect.bottom
                         self.vel_y = 0
+                        if tile_type == 6:
+                            if self.image == self.horse_left:
+                                dx -= 15
+                                for tile in world.tile_list:
+                                    tile_img, tile_rect, tile_type = tile
+                                    if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                                        dx = 0
+
+                                    if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                                        if self.vel_y < 0:
+                                            dy = tile[1].bottom - self.rect.top
+                                            self.vel_y = 0
+                                        elif self.vel_y >= 0:
+                                            dy = tile[1].top - self.rect.bottom
+                                            self.vel_y = 0
+                            else:
+                                dx += 15
+                                for tile in world.tile_list:
+                                    tile_img, tile_rect, tile_type = tile
+                                    if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                                        dx = 0
+
+                                    if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                                        if self.vel_y < 0:
+                                            dy = tile[1].bottom - self.rect.top
+                                            self.vel_y = 0
+                                        elif self.vel_y >= 0:
+                                            dy = tile[1].top - self.rect.bottom
+                                            self.vel_y = 0
+                        if tile_type == 5:
+                            if self.image == self.horse_left:
+                                dx -= 2
+                                for tile in world.tile_list:
+                                    tile_img, tile_rect, tile_type = tile
+                                    if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                                        dx = 0
+
+                                    if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                                        if self.vel_y < 0:
+                                            dy = tile[1].bottom - self.rect.top
+                                            self.vel_y = 0
+                                        elif self.vel_y >= 0:
+                                            dy = tile[1].top - self.rect.bottom
+                                            self.vel_y = 0
+                            else:
+                                dx += 2
+                                for tile in world.tile_list:
+                                    tile_img, tile_rect, tile_type = tile
+                                    if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
+                                        dx = 0
+
+                                    if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
+                                        if self.vel_y < 0:
+                                            dy = tile[1].bottom - self.rect.top
+                                            self.vel_y = 0
+                                        elif self.vel_y >= 0:
+                                            dy = tile[1].top - self.rect.bottom
+                                            self.vel_y = 0
 
             if pygame.sprite.spritecollide(self, lava_group, False):
                 game_over = -1
@@ -133,6 +193,7 @@ class Player:
         self.rect.x = x
         self.rect.y = y
         self.vel_y = 0
+        self.vel_x = 0
         self.jumped = False
 
 
@@ -155,14 +216,14 @@ class World:
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect)
+                    tile_info = (img, img_rect, tile)
                     self.tile_list.append(tile_info)
                 if tile == 2:
                     img = pygame.transform.scale(rocks, (tile_size, tile_size))
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect)
+                    tile_info = (img, img_rect, tile)
                     self.tile_list.append(tile_info)
                 if tile == 3:
                     lava = Lava(col_count * tile_size, row_count * tile_size)
@@ -172,21 +233,21 @@ class World:
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect)
+                    tile_info = (img, img_rect, tile)
                     self.tile_list.append(tile_info)
                 if tile == 5:
                     img = pygame.transform.scale(sand, (tile_size, tile_size))
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect)
+                    tile_info = (img, img_rect, tile)
                     self.tile_list.append(tile_info)
                 if tile == 6:
                     img = pygame.transform.scale(ice, (tile_size, tile_size))
                     img_rect = img.get_rect()
                     img_rect.x = col_count * tile_size
                     img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect)
+                    tile_info = (img, img_rect, tile)
                     self.tile_list.append(tile_info)
                 if tile == 7:
                     flag = Flag(col_count * tile_size, row_count * tile_size)
@@ -235,7 +296,8 @@ class Lava(pygame.sprite.Sprite):
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.transform.scale(pygame.image.load("platformer stuff/coin.png"), (tile_size // 2, tile_size // 2))
+        self.image = pygame.transform.scale(pygame.image.load("platformer stuff/coin.png"),
+                                            (tile_size // 2, tile_size // 2))
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -259,8 +321,9 @@ def reset_level(level_index, image):
     return world
 
 
-sun = pygame.transform.scale(pygame.image.load("platformer stuff/sun no bg.png"), (70, 70))
-cloud = pygame.transform.scale(pygame.image.load("platformer stuff/clouds.png"), (screen_width, screen_height))
+# sun = pygame.transform.scale(pygame.image.load("platformer stuff/sun no bg.png"), (70, 70))
+sky = pygame.transform.scale(pygame.image.load("platformer stuff/new sky.png"), (screen_width, screen_height))
+night = pygame.transform.scale(pygame.image.load("platformer stuff/night.png"), (screen_width, screen_height))
 restart_img = pygame.transform.scale(pygame.image.load("platformer stuff/restart.png"), (200, 100))
 exit_img = pygame.transform.scale(pygame.image.load("platformer stuff/exit.png"), (200, 100))
 play_img = pygame.transform.scale(pygame.image.load("platformer stuff/play.png"), (200, 100))
@@ -277,7 +340,6 @@ coin15 = pygame.transform.scale(pygame.image.load("platformer stuff/15.png"), (2
 coin20 = pygame.transform.scale(pygame.image.load("platformer stuff/20.png"), (200, 100))
 player_img = pygame.image.load("platformer stuff/dragon small.png")
 img = pygame.image.load("platformer stuff/dragon small.png")
-
 
 world_data = [
     [
@@ -315,20 +377,176 @@ world_data = [
         [2, 2, 2, 6, 6, 6, 6, 4, 4, 2, 2, 2, 2, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 8, 0, 9, 2, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 3, 3, 3],
         [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-    ]]
+    ], [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 0, 1],
+        [1, 0, 2, 3, 3, 3, 2, 0, 0, 2, 3, 3, 3, 3, 2, 0, 0, 2, 3, 3, 3, 3, 2, 0, 0, 0, 0, 0, 1],
+        [1, 0, 2, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1],
+        [1, 0, 2, 5, 5, 5, 2, 0, 0, 2, 5, 5, 5, 0, 2, 0, 0, 2, 5, 5, 5, 0, 2, 0, 0, 0, 0, 0, 1],
+        [1, 0, 2, 0, 0, 0, 2, 0, 9, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 9, 0, 0, 0, 1],
+        [1, 0, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 7, 0, 0, 0, 0, 9, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 1],
+        [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 9, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    ], [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 9, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 0, 0, 0, 1],
+        [1, 0, 6, 0, 0, 6, 0, 0, 0, 6, 0, 0, 7, 0, 0, 0, 6, 0, 0, 0, 6, 0, 0, 0, 0, 6, 0, 0, 1],
+        [1, 0, 2, 3, 3, 2, 0, 0, 2, 3, 3, 3, 3, 2, 0, 0, 2, 3, 3, 3, 3, 2, 0, 0, 2, 3, 3, 0, 1],
+        [1, 0, 2, 0, 0, 2, 0, 9, 2, 0, 0, 0, 0, 2, 0, 9, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 1],
+        [1, 0, 2, 5, 5, 2, 0, 0, 2, 5, 5, 5, 0, 2, 0, 0, 2, 5, 5, 5, 0, 2, 0, 0, 2, 0, 9, 0, 1],
+        [1, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0, 9, 2, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 1],
+        [1, 0, 2, 2, 2, 2, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 9, 0, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 6, 6, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 6, 6, 6, 1],
+        [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 9, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    ],
+    [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 9, 0, 0, 0, 0, 0, 9, 0, 0, 9, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 9, 0, 0, 0, 1],
+        [1, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 1],
+        [1, 0, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0, 1],
+        [1, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1],
+        [1, 0, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 5, 2, 0, 1],
+        [1, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1],
+        [1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 6, 6, 0, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 0, 6, 6, 0, 6, 6, 1],
+        [1, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 6, 6, 6, 1],
+        [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 9, 7, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    ],
+    [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 9, 0, 0, 9, 0, 0, 0, 0, 9, 0, 0, 9, 0, 0, 0, 0, 0, 9, 0, 0, 9, 0, 0, 0, 9, 0, 1],
+        [1, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 1],
+        [1, 0, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0, 1],
+        [1, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 1],
+        [1, 0, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 0, 1],
+        [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1],
+        [1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 6, 6, 6, 0, 0, 0, 6, 6, 6, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 6, 6, 6, 1],
+        [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 9, 0, 7, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    ],
+    [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 9, 0, 0, 9, 0, 0, 0, 9, 0, 0, 9, 0, 0, 9, 0, 0, 0, 0, 9, 0, 0, 0, 0, 9, 0, 1],
+        [1, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 1],
+        [1, 0, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 3, 3, 3, 2, 0, 1],
+        [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1],
+        [1, 0, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 5, 5, 5, 2, 0, 1],
+        [1, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 9, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 1],
+        [1, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 1],
+        [1, 2, 2, 4, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 2, 2, 2, 4, 4, 2, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 0, 9, 7, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3]
+    ],
+    [
+        [1] * 29,
+        [1, 0, 0, 0, 0, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 6, 0, 0, 0, 0, 0, 1],
+        [1, 0, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
+        [1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 1],
+        [1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 1],
+        [1, 3, 3, 3, 0, 2, 2, 2, 4, 4, 4, 0, 0, 2, 2, 0, 4, 4, 4, 0, 2, 2, 2, 2, 0, 0, 9, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 0, 0, 0, 2, 0, 0, 7 , 2, 0, 0, 0, 2, 0, 0, 0, 2, 2, 0, 0, 0, 0, 1],
+        [1, 2, 5, 2, 0, 2, 0, 0, 0, 0, 2, 0, 0, 9, 2, 0, 0, 0, 2, 0, 0, 0, 2, 5, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1]
+    ], [
+        [1] * 29,
+        [1, 7, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 1],
+        [1, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 9, 0, 9, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1, 4, 4, 4, 0, 2, 3, 2, 4, 4, 4, 0, 2, 3, 2, 0, 4, 4, 4, 0, 2, 3, 2, 4, 4, 4, 0, 0, 1],
+        [1, 2, 5, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 5, 2, 9, 0, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1] + [0] * 27 + [9] + [1],
+        [1] + [6] * 27 + [6] + [1],
+        [1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1]
+    ],
+    [
+        [1] * 29,
+        [1] + [0] * 27 + [1],
+        [1, 0, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 0, 0, 1],
+        [1, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 0, 7, 1],
+        [1, 0, 2, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 2, 4, 4, 4, 0, 0, 1],
+        [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
+        [1, 0, 3, 3, 3, 0, 2, 2, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1] + [2] * 25 + [0] * 2 + [1],
+        [1] + [0] * 27 + [1],
+        [1] + [0] * 2 + [6] * 25 + [1],
+        [1] + [0] * 27 + [1],
+        [1] + [3] * 27 + [1],
+        [1] * 29
+    ],
+    [
+        [1] * 29,
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 6, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 0, 0, 1],
+        [1, 0, 5, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 4, 4, 4, 0, 2, 0, 4, 4, 4, 0, 2, 0, 4, 4, 4, 0, 2, 0, 0, 0, 0, 0, 1],
+        [1, 8, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1],
+        [1] + [6] * 25 + [0, 0] + [1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
+        [1] + [0] * 2 + [2] * 25 + [2] + [1],
+        [1] + [0] * 27 + [0] + [1],
+        [1, 0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1],
+        [1, 0, 0] + [1] * 27,
+        [0] * 29,
+        [0] * 29,
+        [1] * 2 + [0] * 27
+    ]
+]
 
-restart = Button(screen_width // 2 + 100, screen_height // 2, restart_img)
-exit_button = Button(screen_width // 2 - 300, screen_height // 2 + 60, exit_img)
-play = Button(screen_width // 2 + 100, screen_height // 2, play_img)
-shop = Button(screen_width // 2 - 150, screen_height // 2, shop_img)
-dragon_purple = Button(screen_width // 2 + 100, screen_height // 2 + 50, coin20)
-dragon_blue = Button(screen_width // 2 - 150, screen_height // 2, coin10)
-dragon_red = Button(screen_width // 2 - 350, screen_height // 2, coin10)
-dragon_brown = Button(screen_width // 2 + 100, screen_height // 2 + 200, coin10)
-dragon_green = Button(screen_width // 2 - 150, screen_height // 2 + 400, coin10)
-dragon_white = Button(screen_width // 2, screen_height // 2 - 400, coin10)
-dragon_rainbow = Button(screen_width // 2 - 350, screen_height // 2 - 200, coin10)
-
+restart = Button(1025, 350, restart_img)
+exit_button = Button(225, 350, exit_img)
+exit_button2 = Button(1200, 50, exit_img)
+play = Button(1025, 350, play_img)
+shop = Button(625, 350, shop_img)
+dragon_purple = Button(100, 300, coin20)
+dragon_blue = Button(450, 300, coin10)
+dragon_red = Button(800, 300, coin10)
+dragon_brown = Button(1150, 300, coin10)
+dragon_green = Button(100, 600, coin10)
+dragon_white = Button(450, 600, coin10)
+dragon_rainbow = Button(800, 600, coin10)
 
 bear_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
@@ -344,8 +562,8 @@ run = True
 while run:
 
     clock.tick(fps)
-    screen.blit(cloud, (0, 0))
-    screen.blit(sun, (40, 40))
+    screen.blit(sky, (0, 0))
+    # screen.blit(sun, (40, 40))
     if menu:
         if exit_button.draw():
             run = False
@@ -355,7 +573,15 @@ while run:
             menu = False
             shop_screen = True
     elif shop_screen:
-        draw_text("X " + str(coins), font_score, white, tile_size - 10, 10)
+        draw_text((str(coins) + " + " + str(coins_add)), font_score, white, tile_size - 10, 10)
+
+        screen.blit(pygame.transform.scale(dragon_p, (180, 122)), (110, 170))
+        screen.blit(pygame.transform.scale(dragon_bl, (180, 122)), (460, 170))
+        screen.blit(pygame.transform.scale(dragon_r, (180, 122)), (810, 170))
+        screen.blit(pygame.transform.scale(dragon_br, (180, 122)), (1160, 170))
+        screen.blit(pygame.transform.scale(dragon_g, (180, 122)), (110, 470))
+        screen.blit(pygame.transform.scale(dragon_w, (180, 122)), (460, 470))
+        screen.blit(pygame.transform.scale(dragon_rain, (180, 122)), (810, 470))
 
         if dragon_red.draw():
             if coins >= 10:
@@ -399,7 +625,7 @@ while run:
                 player_img = dragon_g
                 player.reset(70, screen_height - 200, player_img)
 
-        if exit_button.draw():
+        if exit_button2.draw():
             shop_screen = False
     else:
         world.draw()
@@ -407,7 +633,7 @@ while run:
             bear_group.update()
             if pygame.sprite.spritecollide(player, coin_group, True):
                 coins_add += 1
-            draw_text("X " + str(coins), font_score, white, tile_size - 10, 10)
+            draw_text((str(coins) + " + " + str(coins_add)), font_score, white, tile_size - 10, 10)
 
         if game_over == -1:
             coins_add = 0
@@ -420,15 +646,31 @@ while run:
                 run = False
                 coins = 0
             if shop.draw():
+                game_over = 0
                 menu = False
                 shop_screen = True
+
+        if next_level:
+            if shop.draw():
+                next_level = False
+                shop_screen = True
+
+            if exit_button.draw():
+                run = False
+                coins = 0
+
+            if play.draw():
+                next_level = False
+
         if game_over == 1:
+            next_level = True
             level_index += 1
             if level_index <= max_level - 1:
                 world = []
                 world = reset_level(level_index, player_img)
                 game_over = 0
                 coins += coins_add
+                coins_add = 0
             if shop.draw():
                 menu = False
                 shop_screen = True
