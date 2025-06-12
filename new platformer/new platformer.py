@@ -11,7 +11,7 @@ game_over = 0
 menu = True
 shop_screen = False
 next_level = False
-coins = 0
+coins = 50
 level_index = 0
 max_level = 11
 coins_add = 0
@@ -160,10 +160,14 @@ class Player:
                                             dy = tile[1].top - self.rect.bottom
                                             self.vel_y = 0
 
-            if pygame.sprite.spritecollide(self, lava_group, False):
-                game_over = -1
-            if pygame.sprite.spritecollide(self, bear_group, False):
-                game_over = -1
+            if self.fire:
+                if pygame.sprite.spritecollide(self, lava_group, False):
+                    game_over = -1
+            if self.bear:
+                if pygame.sprite.spritecollide(self, bear_group, False):
+                    game_over = -1
+            if not self.bear:
+                pygame.sprite.spritecollide(self, bear_group, True)
             if pygame.sprite.spritecollide(self, flag_group, False):
                 game_over = 1
 
@@ -180,10 +184,18 @@ class Player:
 
     def reset(self, x, y, image):
         self.player = image
+        self.fire = True
+        self.bear = True
         if image == dragon_p:
             self.player = pygame.transform.scale(self.player, (90, 49))
+        if image == dragon_br:
+            self.bear = False
+        if image == dragon_w:
+            self.player = pygame.transform.scale(self.player, (45, 45))
         else:
             self.player = pygame.transform.scale(self.player, (90, 61))
+            if image == dragon_r:
+                self.fire = False
         self.image = self.player
         self.horse_left = pygame.transform.flip(self.player, True, False)
         self.ghost = pygame.transform.scale(pygame.image.load("platformer stuff/ghost2.png"), (88, 112))
@@ -202,7 +214,6 @@ class World:
         self.tile_list = []
         rocks = pygame.image.load("platformer stuff/rocks.png")
         grass = pygame.image.load("platformer stuff/grass.png")
-        water = pygame.image.load("platformer stuff/water.png")
         sand = pygame.image.load("platformer stuff/sand.png")
         ice = pygame.image.load("platformer stuff/ice.png")
         flag = pygame.image.load("platformer stuff/flag.png")
@@ -229,12 +240,8 @@ class World:
                     lava = Lava(col_count * tile_size, row_count * tile_size)
                     lava_group.add(lava)
                 if tile == 4:
-                    img = pygame.transform.scale(water, (tile_size, tile_size))
-                    img_rect = img.get_rect()
-                    img_rect.x = col_count * tile_size
-                    img_rect.y = row_count * tile_size
-                    tile_info = (img, img_rect, tile)
-                    self.tile_list.append(tile_info)
+                    water = Water(col_count * tile_size, row_count * tile_size)
+                    water_group.add(water)
                 if tile == 5:
                     img = pygame.transform.scale(sand, (tile_size, tile_size))
                     img_rect = img.get_rect()
@@ -293,6 +300,15 @@ class Lava(pygame.sprite.Sprite):
         self.rect.y = y
 
 
+class Water(pygame.sprite.Sprite):
+    def __init__(self, x, y):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.transform.scale(pygame.image.load("platformer stuff/water.png"), (tile_size, tile_size))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+
 class Coin(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -316,6 +332,7 @@ def reset_level(level_index, image):
     bear_group.empty()
     lava_group.empty()
     flag_group.empty()
+    water_group.empty()
     coin_group.empty()
     world = World(world_data[level_index])
     return world
@@ -331,7 +348,7 @@ shop_img = pygame.transform.scale(pygame.image.load("platformer stuff/shop.png")
 dragon_bl = pygame.image.load("platformer stuff/dragon blue.png")
 dragon_r = pygame.image.load("platformer stuff/dragon red.png")
 dragon_p = pygame.image.load("platformer stuff/dragon purple.png")
-dragon_w = pygame.image.load("platformer stuff/dragon white.png")
+dragon_w = pygame.image.load("platformer stuff/dragon white2.png")
 dragon_rain = pygame.image.load("platformer stuff/dragon rainbow.png")
 dragon_g = pygame.image.load("platformer stuff/dragon green.png")
 dragon_br = pygame.image.load("platformer stuff/dragon brown.png")
@@ -472,16 +489,16 @@ world_data = [
         [1, 0, 2, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 1],
         [1, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 0, 1],
         [1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 1],
         [1, 3, 3, 3, 0, 2, 2, 2, 4, 4, 4, 0, 0, 2, 2, 0, 4, 4, 4, 0, 2, 2, 2, 2, 0, 0, 9, 0, 1],
-        [1, 2, 2, 2, 0, 2, 0, 0, 0, 0, 2, 0, 0, 7 , 2, 0, 0, 0, 2, 0, 0, 0, 2, 2, 0, 0, 0, 0, 1],
+        [1, 2, 2, 2, 0, 2, 0, 0, 0, 0, 2, 0, 0, 7, 2, 0, 0, 0, 2, 0, 0, 0, 2, 2, 0, 0, 0, 0, 1],
         [1, 2, 5, 2, 0, 2, 0, 0, 0, 0, 2, 0, 0, 9, 2, 0, 0, 0, 2, 0, 0, 0, 2, 5, 0, 0, 0, 0, 1],
         [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1]
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+        [1, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1]
     ], [
         [1] * 29,
         [1, 7, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
@@ -496,8 +513,8 @@ world_data = [
         [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
         [1, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 0, 0, 1],
         [1] + [0] * 27 + [9] + [1],
-        [1] + [6] * 27 + [6] + [1],
-        [1, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 1]
+        [1] + [6] * 28 + [1],
+        [1, 2, 2, 2, 2, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1]
     ],
     [
         [1] * 29,
@@ -508,12 +525,12 @@ world_data = [
         [1, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
         [1, 0, 0, 0, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1],
-        [1, 0, 3, 3, 3, 0, 2, 2, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 3, 3, 3, 0, 2, 2, 2, 0, 0, 0, 1],
+        [1, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 1],
         [1] + [2] * 25 + [0] * 2 + [1],
         [1] + [0] * 27 + [1],
         [1] + [0] * 2 + [6] * 25 + [1],
         [1] + [0] * 27 + [1],
-        [1] + [3] * 27 + [1],
+        [1] + [2] * 27 + [1],
         [1] * 29
     ],
     [
@@ -522,7 +539,7 @@ world_data = [
         [1, 2, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 3, 2, 2, 2, 2, 0, 0, 1],
         [1, 0, 5, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 2, 0, 5, 0, 0, 0, 1],
         [1, 0, 0, 0, 0, 0, 4, 4, 4, 0, 2, 0, 4, 4, 4, 0, 2, 0, 4, 4, 4, 0, 2, 0, 0, 0, 0, 0, 1],
-        [1, 8, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 1],
+        [1, 9, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 1],
         [1] + [6] * 25 + [0, 0] + [1],
         [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1],
         [1] + [0] * 2 + [2] * 25 + [2] + [1],
@@ -540,16 +557,17 @@ exit_button = Button(225, 350, exit_img)
 exit_button2 = Button(1200, 50, exit_img)
 play = Button(1025, 350, play_img)
 shop = Button(625, 350, shop_img)
-dragon_purple = Button(100, 300, coin20)
+dragon_purple = Button(100, 300, coin15)
 dragon_blue = Button(450, 300, coin10)
 dragon_red = Button(800, 300, coin10)
-dragon_brown = Button(1150, 300, coin10)
+dragon_brown = Button(1150, 300, coin20)
 dragon_green = Button(100, 600, coin10)
-dragon_white = Button(450, 600, coin10)
+dragon_white = Button(450, 600, coin20)
 dragon_rainbow = Button(800, 600, coin10)
 
 bear_group = pygame.sprite.Group()
 lava_group = pygame.sprite.Group()
+water_group = pygame.sprite.Group()
 flag_group = pygame.sprite.Group()
 coin_group = pygame.sprite.Group()
 counting_coin = Coin(tile_size // 2, tile_size // 2)
@@ -574,7 +592,6 @@ while run:
             shop_screen = True
     elif shop_screen:
         draw_text((str(coins) + " + " + str(coins_add)), font_score, white, tile_size - 10, 10)
-
         screen.blit(pygame.transform.scale(dragon_p, (180, 122)), (110, 170))
         screen.blit(pygame.transform.scale(dragon_bl, (180, 122)), (460, 170))
         screen.blit(pygame.transform.scale(dragon_r, (180, 122)), (810, 170))
@@ -588,49 +605,49 @@ while run:
                 coins -= 10
                 player_img = dragon_r
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_blue.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_bl
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_purple.draw():
-            if coins >= 20:
-                coins -= 20
+            if coins >= 15:
+                coins -= 15
                 player_img = dragon_p
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_brown.draw():
-            if coins >= 10:
-                coins -= 10
+            if coins >= 20:
+                coins -= 20
                 player_img = dragon_br
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_white.draw():
-            if coins >= 10:
-                coins -= 10
+            if coins >= 20:
+                coins -= 20
                 player_img = dragon_w
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_rainbow.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_rain
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if dragon_green.draw():
             if coins >= 10:
                 coins -= 10
                 player_img = dragon_g
                 game_over = 0
-                player.reset(70, 600, player_img)
+                player.reset(50, 600, player_img)
 
         if exit_button2.draw():
             shop_screen = False
@@ -693,6 +710,7 @@ while run:
         lava_group.draw(screen)
         flag_group.draw(screen)
         coin_group.draw(screen)
+        water_group.draw(screen)
 
         game_over = player.update(game_over)
         # draw_grid()
