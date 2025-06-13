@@ -186,13 +186,13 @@ class Player:
         self.player = image
         self.fire = True
         self.bear = True
+
         if image == dragon_p:
             self.player = pygame.transform.scale(self.player, (90, 45))
 
-        if image == dragon_br:
-            self.bear = False
-
         if image == dragon_w:
+            self.fire = True
+            self.bear = True
             self.player = pygame.transform.scale(self.player, (45, 45))
 
         if image == dragon_rain:
@@ -202,8 +202,12 @@ class Player:
 
         else:
             self.player = pygame.transform.scale(self.player, (90, 61))
+
             if image == dragon_r:
                 self.fire = False
+
+            if image == dragon_br:
+                self.bear = False
 
         self.image = self.player
         self.horse_left = pygame.transform.flip(self.player, True, False)
