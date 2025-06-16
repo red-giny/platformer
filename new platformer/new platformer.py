@@ -186,28 +186,22 @@ class Player:
         self.player = image
         self.fire = True
         self.bear = True
-
         if image == dragon_p:
             self.player = pygame.transform.scale(self.player, (90, 45))
-
-        if image == dragon_w:
-            self.fire = True
-            self.bear = True
-            self.player = pygame.transform.scale(self.player, (45, 45))
-
-        if image == dragon_rain:
-            self.fire = False
-            self.bear = False
-            self.player = pygame.transform.scale(self.player, (45, 45))
-
-        else:
-            self.player = pygame.transform.scale(self.player, (90, 61))
-
             if image == dragon_r:
                 self.fire = False
-
             if image == dragon_br:
                 self.bear = False
+        if image == dragon_rain or image == dragon_w:
+            self.player = pygame.transform.scale(self.player, (40, 40))
+            # if image == dragon_w:
+                # self.player = pygame.transform.scale(self.player, (45, 45))
+            if image == dragon_rain:
+                self.fire = False
+                self.bear = False
+                # self.player = pygame.transform.scale(self.player, (45, 45))
+        else:
+            self.player = pygame.transform.scale(self.player, (90, 61))
 
         self.image = self.player
         self.horse_left = pygame.transform.flip(self.player, True, False)
@@ -572,7 +566,7 @@ exit_button = Button(225, 350, exit_img)
 exit_button2 = Button(1200, 50, exit_img)
 play = Button(1025, 350, play_img)
 shop = Button(625, 350, shop_img)
-dragon_purple = Button(100, 300, coin15)
+dragon_purple = Button(100, 300, coin20)
 dragon_blue = Button(450, 300, coin10)
 dragon_red = Button(800, 300, coin15)
 dragon_brown = Button(1150, 300, coin50)
@@ -630,8 +624,8 @@ while run:
                 player.reset(50, 600, player_img)
 
         if dragon_purple.draw():
-            if coins >= 15:
-                coins -= 15
+            if coins >= 20:
+                coins -= 20
                 player_img = dragon_p
                 game_over = 0
                 player.reset(50, 600, player_img)
@@ -648,7 +642,7 @@ while run:
                 coins -= 50
                 player_img = dragon_w
                 game_over = 0
-                player.reset(50, 600, player_img)
+                player.reset(50, 650, player_img)
 
         if dragon_rainbow.draw():
             if coins >= 100:
